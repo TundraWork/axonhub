@@ -41,7 +41,7 @@ export default function TwoColumnAuth({
             <div className='mb-8'>
               <h1 className='mb-4 text-4xl font-light text-slate-100'>{t('auth.brand.title')}</h1>
               <h2 className='mb-6 bg-gradient-to-r from-emerald-300 to-teal-200 bg-clip-text text-5xl font-bold text-transparent'>
-                AxonHub
+                Railgun One
               </h2>
               <p className='text-lg leading-relaxed text-slate-300'>{t('auth.brand.description')}</p>
             </div>
