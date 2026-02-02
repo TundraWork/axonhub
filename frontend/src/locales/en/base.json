@@ -277,7 +277,7 @@
   "scopes.select.selectedCount": "{{count}} scopes selected",
   "scopes.select.noResults": "No scopes found",
   "auth.brand.title": "Unified AI Gateway",
-  "auth.brand.description": "Unified OpenAI/Anthropic/Gemini compatible API with a flexible transformer pipeline, intelligent routing, and comprehensive tracing—built for enterprise reliability.",
+  "auth.brand.description": "Unified OpenAI/Google/Anthropic compatible LLM API Gateway with a flexible transformer pipeline, intelligent routing, and comprehensive tracing, built for production-level reliability.",
   "auth.signIn.title": "Sign in to Railgun One",
   "auth.signIn.subtitle": "Enter your email and password to access your account",
   "auth.signIn.form.email.label": "Email",
@@ -289,5 +289,5 @@
   "auth.signIn.form.signingIn": "Signing in...",
   "auth.signIn.validation.emailRequired": "Email is required",
   "auth.signIn.links.forgotPassword": "Forgot password?",
-  "auth.signIn.footer.agreement": "By signing in, you agree to our Terms of Service and Privacy Policy"
+  "auth.signIn.footer.agreement": "By signing in you agree to our Terms of Service and Privacy Policy"
 }
