@@ -61,11 +61,11 @@ export function AppHeader() {
                   height={24}
                   className='size-8 object-cover'
                   onError={(e) => {
-                    e.currentTarget.src = '/logo.jpg';
+                    e.currentTarget.src = '/logo.png';
                   }}
                 />
               ) : (
-                <img src='/logo.jpg' alt='Default Logo' width={24} height={24} className='size-8 object-cover' />
+                <img src='/logo.png' alt='Default Logo' width={24} height={24} className='size-8 object-cover' />
               )}
             </div>
             <span className='text-sm leading-none font-semibold'>{displayName}</span>

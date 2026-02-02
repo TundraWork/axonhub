@@ -48,12 +48,12 @@ export function TeamSwitcher({
                       className='size-8 object-cover'
                       onError={(e) => {
                         // Fallback to default logo on error
-                        e.currentTarget.src = '/logo.jpg';
+                        e.currentTarget.src = '/logo.png';
                       }}
                     />
                   ) : (
                     <img
-                      src='/logo.jpg'
+                      src='/logo.png'
                       alt='Default Logo'
                       className='size-8 object-cover'
                       onError={() => {
@@ -98,12 +98,12 @@ export function TeamSwitcher({
                   className='size-8 object-cover'
                   onError={(e) => {
                     // Fallback to default logo on error
-                    e.currentTarget.src = '/logo.jpg';
+                    e.currentTarget.src = '/logo.png';
                   }}
                 />
               ) : (
                 <img
-                  src='/logo.jpg'
+                  src='/logo.png'
                   alt='Default Logo'
                   className='size-8 object-cover'
                   onError={() => {
