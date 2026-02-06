@@ -80,17 +80,6 @@ export function ApiKeyProfilesDialog({ open, onOpenChange, onSubmit, loading = f
   const [dialogContent, setDialogContent] = useState<HTMLDivElement | null>(null);
   const locale = i18n.language === 'zh' ? zhCN : enUS;
   const apiKeyId = selectedApiKey?.id ?? '';
-  const quotaUsagesQuery = useApiKeyQuotaUsages(apiKeyId, {
-    enabled: open && !!apiKeyId,
-    refetchInterval: open ? 10000 : undefined,
-  });
-  const quotaUsageByProfileName = useMemo(() => {
-    const map = new Map<string, ApiKeyProfileQuotaUsage>();
-    quotaUsagesQuery.data?.forEach((u) => {
-      map.set(u.profileName, u);
-    });
-    return map;
-  }, [quotaUsagesQuery.data]);
 
   useEffect(() => {
     if (open) {
@@ -145,6 +134,40 @@ export function ApiKeyProfilesDialog({ open, onOpenChange, onSubmit, loading = f
   // Watch profile names to update activeProfile dropdown options
   const watchedProfiles = form.watch('profiles') || [];
   const profileNames = watchedProfiles.map((profile) => profile.name || '');
+  const periodOverrides = useMemo(() => {
+    const isCompletePeriod = (period: ApiKeyQuotaPeriod) => {
+      switch (period.type) {
+        case 'all_time':
+          return true;
+        case 'past_duration':
+          return !!period.pastDuration?.value && !!period.pastDuration?.unit;
+        case 'calendar_duration':
+          return !!period.calendarDuration?.unit;
+        default:
+          return false;
+      }
+    };
+
+    return watchedProfiles
+      .filter((profile) => !!profile?.name?.trim() && !!profile?.quota?.period && isCompletePeriod(profile.quota.period))
+      .map((profile) => ({
+        profileName: profile.name.trim(),
+        period: profile.quota!.period,
+      }))
+      .sort((a, b) => a.profileName.localeCompare(b.profileName));
+  }, [watchedProfiles]);
+
+  const quotaUsagesQuery = useApiKeyQuotaUsages(apiKeyId, periodOverrides, {
+    enabled: open && !!apiKeyId,
+    refetchInterval: open ? 10000 : undefined,
+  });
+  const quotaUsageByProfileName = useMemo(() => {
+    const map = new Map<string, ApiKeyProfileQuotaUsage>();
+    quotaUsagesQuery.data?.forEach((u) => {
+      map.set(u.profileName, u);
+    });
+    return map;
+  }, [quotaUsagesQuery.data]);
 
   useEffect(() => {
     const nonEmptyProfiles = watchedProfiles.filter((profile) => profile?.name?.trim());

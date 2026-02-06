@@ -222,8 +222,8 @@ const BULK_ARCHIVE_APIKEYS_MUTATION = `
 `;
 
 const APIKEY_QUOTA_USAGES_QUERY = `
-  query APIKeyQuotaUsages($apiKeyId: ID!) {
-    apiKeyQuotaUsages(apiKeyId: $apiKeyId) {
+  query APIKeyQuotaUsages($apiKeyId: ID!, $periodOverrides: [APIKeyQuotaUsagePeriodOverrideInput!]) {
+    apiKeyQuotaUsages(apiKeyId: $apiKeyId, periodOverrides: $periodOverrides) {
       profileName
       quota {
         requests
@@ -332,6 +332,10 @@ export function useApiKey(id: string) {
 
 export function useApiKeyQuotaUsages(
   apiKeyId: string,
+  periodOverrides?: Array<{
+    profileName: string;
+    period: NonNullable<NonNullable<ApiKeyProfileQuotaUsage['quota']>['period']>;
+  }>,
   options?: {
     enabled?: boolean;
     refetchInterval?: number;
@@ -342,13 +346,13 @@ export function useApiKeyQuotaUsages(
   const selectedProjectId = useSelectedProjectId();
 
   return useQuery({
-    queryKey: ['apiKeyQuotaUsages', apiKeyId, selectedProjectId],
+    queryKey: ['apiKeyQuotaUsages', apiKeyId, selectedProjectId, periodOverrides],
     queryFn: async () => {
       try {
         const headers = selectedProjectId ? { 'X-Project-ID': selectedProjectId } : undefined;
         const data = await graphqlRequest<{ apiKeyQuotaUsages: ApiKeyProfileQuotaUsage[] }>(
           APIKEY_QUOTA_USAGES_QUERY,
-          { apiKeyId },
+          { apiKeyId, periodOverrides },
           headers
         );
         return apiKeyProfileQuotaUsageSchema.array().parse(data.apiKeyQuotaUsages);

@@ -574,7 +574,7 @@ func (r *queryResolver) QueryChannels(ctx context.Context, input biz.QueryChanne
 }
 
 // APIKeyQuotaUsages is the resolver for the apiKeyQuotaUsages field.
-func (r *queryResolver) APIKeyQuotaUsages(ctx context.Context, apiKeyID objects.GUID) ([]*APIKeyProfileQuotaUsage, error) {
+func (r *queryResolver) APIKeyQuotaUsages(ctx context.Context, apiKeyID objects.GUID, periodOverrides []*APIKeyQuotaUsagePeriodOverrideInput) ([]*APIKeyProfileQuotaUsage, error) {
 	apiKey, err := r.client.APIKey.Get(ctx, apiKeyID.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get api key: %w", err)
@@ -585,6 +585,13 @@ func (r *queryResolver) APIKeyQuotaUsages(ctx context.Context, apiKeyID objects.
 	}
 
 	quotaService := biz.NewQuotaService(r.client, r.systemService)
+	overridePeriodByProfileName := make(map[string]*objects.APIKeyQuotaPeriod, len(periodOverrides))
+	for _, override := range periodOverrides {
+		if override == nil || override.Period == nil {
+			continue
+		}
+		overridePeriodByProfileName[override.ProfileName] = override.Period
+	}
 
 	result := make([]*APIKeyProfileQuotaUsage, 0, len(apiKey.Profiles.Profiles))
 	for _, profile := range apiKey.Profiles.Profiles {
@@ -592,14 +599,21 @@ func (r *queryResolver) APIKeyQuotaUsages(ctx context.Context, apiKeyID objects.
 			continue
 		}
 
-		quotaRes, err := quotaService.GetQuota(ctx, apiKey.ID, profile.Quota)
+		quotaToUse := profile.Quota
+		if overridePeriod, ok := overridePeriodByProfileName[profile.Name]; ok && overridePeriod != nil {
+			quotaCopy := *profile.Quota
+			quotaCopy.Period = *overridePeriod
+			quotaToUse = &quotaCopy
+		}
+
+		quotaRes, err := quotaService.GetQuota(ctx, apiKey.ID, quotaToUse)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get api key quota usage: %w", err)
 		}
 
 		result = append(result, &APIKeyProfileQuotaUsage{
 			ProfileName: profile.Name,
-			Quota:       profile.Quota,
+			Quota:       quotaToUse,
 			Window: &APIKeyQuotaWindow{
 				Start: quotaRes.Window.Start,
 				End:   quotaRes.Window.End,

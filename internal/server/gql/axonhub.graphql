@@ -389,6 +389,11 @@ type APIKeyProfileQuotaUsage {
   usage: APIKeyQuotaUsage!
 }
 
+input APIKeyQuotaUsagePeriodOverrideInput {
+  profileName: String!
+  period: APIKeyQuotaPeriodInput!
+}
+
 input FetchModelsInput {
   channelType: String!
   baseURL: String!
@@ -773,5 +778,8 @@ extend type Query {
   """
   Returns quota usage for profiles that have quota enabled for an API key.
   """
-  apiKeyQuotaUsages(apiKeyId: ID!): [APIKeyProfileQuotaUsage!]!
+  apiKeyQuotaUsages(
+    apiKeyId: ID!
+    periodOverrides: [APIKeyQuotaUsagePeriodOverrideInput!]
+  ): [APIKeyProfileQuotaUsage!]!
 }

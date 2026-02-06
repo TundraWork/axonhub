@@ -31,6 +31,11 @@ type APIKeyQuotaUsage struct {
 	TotalCost    decimal.Decimal `json:"totalCost"`
 }
 
+type APIKeyQuotaUsagePeriodOverrideInput struct {
+	ProfileName string                     `json:"profileName"`
+	Period      *objects.APIKeyQuotaPeriod `json:"period"`
+}
+
 type APIKeyQuotaWindow struct {
 	Start *time.Time `json:"start,omitempty"`
 	End   *time.Time `json:"end,omitempty"`
